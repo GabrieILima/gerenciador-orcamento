@@ -8,7 +8,7 @@ Muitos estudantes ficam presos no "inferno dos tutoriais" repetindo lógicas abs
 
 ### Tecnologias Utilizadas
 
-### **Backend (O Cérebro & Banco de Dados)**
+### **Backend **
 
 * **Node.js (v24+)**: Ambiente de execução nativo de alta performance.
 * **TypeScript**: Camada de tipagem estática para blindagem de contratos de dados contra erros em tempo de desenvolvimento.
@@ -16,7 +16,7 @@ Muitos estudantes ficam presos no "inferno dos tutoriais" repetindo lógicas abs
 * **Módulo Nativo fs/promises**: Gerenciamento e escrita assíncrona (async/await) de dados persistidos no formato JSON.
 * **CORS**: Middleware para liberação de credenciais de rede seguras para o ecossistema frontend.
 
-### **Frontend (A Cabine de Comando)**
+### **Frontend **
 
 * **React**: Biblioteca baseada em componentes focada em reatividade de interfaces.
 * **Vite**: Ferramenta de build moderna e ultra rápida para empacotamento do frontend.
