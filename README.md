@@ -85,6 +85,6 @@ Use o código com cuidado.
 
 Acesse o link http://localhost:5173 no seu navegador. 
 
-### 🎓 Evolução Pessoal
+### Evolução Pessoal
 
 Este projeto representa o ponto de virada onde assumi o controle de ponta a ponta de uma arquitetura web corporativa. O motor de cálculo, o gerenciamento assíncrono de arquivos e o mapeamento de requisições de rede foram desenhados e implementados linha por linha, garantindo total independência técnica e abrindo portas para a construção de produtos digitais escaláveis (SaaS).
