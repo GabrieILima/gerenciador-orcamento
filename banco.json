@@ -5,5 +5,26 @@
     "valor": 1500,
     "tipo": "ganho",
     "data": "2026-09-03T02:55:18.064Z"
+  },
+  {
+    "id": 1788590204600,
+    "descricao": "Luz",
+    "valor": 185,
+    "tipo": "despesa",
+    "data": "2026-09-05T06:36:44.600Z"
+  },
+  {
+    "id": 1788590216536,
+    "descricao": "Internet",
+    "valor": 130,
+    "tipo": "despesa",
+    "data": "2026-09-05T06:36:56.536Z"
+  },
+  {
+    "id": 1788590227007,
+    "descricao": "Alimentação",
+    "valor": 350,
+    "tipo": "despesa",
+    "data": "2026-09-05T06:37:07.007Z"
   }
 ]

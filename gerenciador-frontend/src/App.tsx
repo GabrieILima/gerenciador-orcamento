@@ -105,7 +105,7 @@ function App() {
         {extrato.map((item) => (
             <li key={item.id} className={`item-descricao ${item.tipo}`}>
               {item.descricao} - R$ {item.valor} ({item.tipo})
-            <button onClick={() => lidarDeletar(item.id)}>Deletar</button>
+            <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
             </li>
           ))}
       </ul>
