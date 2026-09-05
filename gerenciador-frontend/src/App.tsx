@@ -6,6 +6,10 @@ type Transacao = {
     descricao: string;
     valor: number;
     tipo: "ganho" | "despesa";
+    recorrente: "unica" | "fixa" | "parcelada";
+    parcelaAtual?: number;
+    totalParcelas?: number;
+    status: "ativo" | "concluido";
     data: Date;
 };
 
@@ -27,6 +31,8 @@ function App() {
   const [descricaoInput, setDescricaoInput] = useState<string>("")
   const [valorInput, setValorInput] = useState<number>(0)
   const [tipoInput, setTipoInput] = useState<"ganho" | "despesa">("ganho")
+  const [recorrenteInput, serRecorrenteInput] = useState<"unica" | "fixa" | "parcelada">("unica")
+  const [totalParcelasInput, setTotalParcelasInput] = useState<number>(1);
 
   let ganhos = 0
   let perdas = 0
@@ -39,6 +45,10 @@ function App() {
       descricao: descricaoInput,
       valor: valorInput,
       tipo: tipoInput,
+      recorrente: recorrenteInput,
+      parcelaAtual: recorrenteInput === 'parcelada' ? 1 : undefined,
+      totalParcelas: recorrenteInput ==='parcelada' ? totalParcelasInput:undefined,
+      status: "ativo",
       data: new Date()
     };
 
@@ -98,14 +108,26 @@ function App() {
           <option value="ganho">Ganhos</option>
           <option value="despesa">Despesas</option>
         </select>
+        <select name="recorrente" id="recorrenteInput" value={recorrenteInput} onChange={(e) => serRecorrenteInput(e.target.value as "unica" | "fixa" | "parcelada")}>
+          <option value="unica">Única</option>
+          <option value="fixa">Fixa</option>
+          <option value="parcelada">Parcelada</option>
+        </select>
+        {recorrenteInput === "parcelada" && (
+          <input type="number" placeholder="Qtd Parcelas" value={totalParcelasInput} onChange={(e) => setTotalParcelasInput(Number(e.target.value))}/>)}
         <button type= "submit">Adicionar</button>
       </form>
 
       <ul className="lista-extrato">
         {extrato.map((item) => (
             <li key={item.id} className={`item-descricao ${item.tipo}`}>
-              {item.descricao} - R$ {item.valor} ({item.tipo})
+              <span>
+              {item.descricao} - R$ {item.valor} {}
+              {item.recorrente === "fixa" && <span className="tag-recorrente">(Fixa) </span>}
+              {item.recorrente === "parcelada" && <span className="tag-recorrente">({item.parcelaAtual}/{item.totalParcelas}) </span>}
+              </span>
             <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
+
             </li>
           ))}
       </ul>

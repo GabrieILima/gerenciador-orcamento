@@ -35,7 +35,7 @@ body {
   border-left: 5px solid #3a3a3a;
 }
 
-.card-saldo{
+.card-saldo h2{
   margin: 0;
   font-size: 22px;
   color: #e0e0e0;
@@ -45,6 +45,7 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 25px;
+  flex-wrap: wrap;
 }
 
 .formulario-financas input,

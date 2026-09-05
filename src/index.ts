@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors"
 
 import * as fs from "fs/promises";
+import { it } from "node:test";
 
 const app = express();
 const PORTA = 3000
@@ -16,7 +17,14 @@ type Transacao = {
     descricao: string;
     valor: number;
     tipo: "ganho" | "despesa";
+    recorrente: "unica" | "fixa" | "parcelada";
+    parcelaAtual?: number;
+    totalParcelas?: number;
+    statusAtual: "ativo" | "concluido";
     data: Date;
+
+
+
 };
 
 
@@ -32,6 +40,70 @@ async function carregarDados(){
     extrato = JSON.parse(dadosTexto)
     console.log("Dados Carregados com sucesso")
 }
+
+async function processarRecorrencia() {
+    const hoje = new Date;
+    const mesAtual = hoje.getMonth();
+    const anoAtual = hoje.getFullYear();
+
+    let novasTransacoes: Transacao[] = [];
+
+    extrato.forEach((item) => {
+        if (item.statusAtual === "ativo" && item.recorrente === "fixa" || item.recorrente === "parcelada"){
+
+
+            const jaExisteEsteMes = extrato.some((t) => {
+                const datatT = new Date(t.data);
+                return t.descricao === item.descricao &&
+                        datatT.getMonth() === mesAtual &&
+                        datatT.getFullYear() === anoAtual;
+            })
+
+            if (!jaExisteEsteMes){
+
+                
+            const copiaTransacao: Transacao = {
+                id: Date.now() + Math.random(),
+                descricao: item.descricao,
+                valor: item.valor,
+                tipo: item.tipo,
+                recorrente: item.recorrente,
+                statusAtual: item.statusAtual,
+                data: new Date()
+            }
+
+
+                if(item.recorrente == "parcelada" && item.parcelaAtual && item.totalParcelas){
+                    const proximaParcela = item.parcelaAtual +1;
+                    
+                    copiaTransacao.parcelaAtual = proximaParcela;
+                    copiaTransacao.totalParcelas = item.totalParcelas
+
+                    if (proximaParcela >= item.totalParcelas){
+                        copiaTransacao.statusAtual = "concluido"
+                    }
+                }
+                
+
+            novasTransacoes.push(copiaTransacao)
+
+            }
+        }
+            
+
+        });
+
+        if(novasTransacoes.length > 0){
+            extrato = [...extrato, ...novasTransacoes];
+            await salvarDados();
+            console.log(`Automação: ${novasTransacoes.length} contas recorrentes geradas para este mês.`)
+        }
+    }
+    
+
+
+
+
 function calcularSaldo(): number {
     let ganhos: number = 0;
     let devedor: number = 0;
@@ -89,6 +161,7 @@ app.delete("/transacoes/:id", async (req, res)=> {
 
 app.listen(PORTA, async () => {
     await carregarDados();
+    await processarRecorrencia()
     console.log(`Servidor rodando em http://localhost:${PORTA}`);
     iniciarSistema();
 });
