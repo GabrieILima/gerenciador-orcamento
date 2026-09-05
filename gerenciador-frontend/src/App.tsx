@@ -11,11 +11,18 @@ type Transacao = {
 
 function App() {
 
-  const [extrato, setExtrato] = useState<Transacao[]>([
-    { id: 1, descricao: "Salário", valor: 1500, tipo: "ganho", data: new Date() },
-    { id: 2, descricao: "Luz", valor: 185, tipo: "despesa", data: new Date() },
-    { id: 3, descricao: "Internt", valor: 130, tipo: "despesa", data: new Date() }
-  ])
+  async function buscarTransacao() {
+    const reposta = await fetch("http://localhost:3000/transacoes");
+    const dados = await reposta.json();
+
+    setExtrato(dados);
+  }
+
+  useEffect(() =>{
+    buscarTransacao();
+  }, []);
+
+  const [extrato, setExtrato] = useState<Transacao[]>([])
 
   const [descricaoInput, setDescricaoInput] = useState<string>("")
   const [valorInput, setValorInput] = useState<number>(0)
@@ -24,7 +31,7 @@ function App() {
   let ganhos = 0
   let perdas = 0
 
-  function lidarAdicionar(e: React.FormEvent){
+  async function lidarAdicionar(e: React.FormEvent){
     e.preventDefault();
 
     const novaTransacao: Transacao ={
@@ -33,16 +40,28 @@ function App() {
       valor: valorInput,
       tipo: tipoInput,
       data: new Date()
-    }
-    setExtrato([...extrato,novaTransacao]);
+    };
+
+    await fetch("http://localhost:3000/transacoes", {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(novaTransacao)
+    })
+
+    buscarTransacao();
 
     setDescricaoInput("");
     setValorInput(0);
   };
 
-  function lidarDeletar(idDeletar: number){
-    const listaFiltrada = extrato.filter((item) => item.id !== idDeletar);
-    setExtrato(listaFiltrada);
+  async function lidarDeletar(idDeletar: number){
+    await fetch (`http://localhost:3000/transacoes/${idDeletar}`, {
+      method: "DELETE"
+    });
+
+    buscarTransacao()
   }
 
   extrato.forEach((item) =>{
@@ -60,12 +79,21 @@ function App() {
 
 
   return(
-    <div>
-      <h1>Meu Gerenciador Financeiro</h1>
-      <h2>Saldo atual R${saldoAtual}</h2>
-      <form onSubmit={lidarAdicionar}>
+    <div className="container-app">
+
+      <div className="card-titulo">
+        <h1>Meu Gerenciador Financeiro</h1>
+      </div>
+      
+
+      <div className="card-saldo">
+        <h2>Saldo atual R${saldoAtual}</h2>
+      </div>
+      
+
+      <form onSubmit={lidarAdicionar} className="formulario-financas">
         <input type="text" placeholder="Ex: Salário" value={descricaoInput} onChange={(e) => setDescricaoInput(e.target.value)}/>
-        <input type="number" placeholder="EX: 1500" value={valorInput} onChange={(e) => setValorInput(Number(e.target.value))} />
+        <input type="number" placeholder="Ex: 1500" value={valorInput === 0 ? "": valorInput} onChange={(e) => setValorInput(Number(e.target.value))} />
         <select name="tipo" id="tipoTransacao" value={tipoInput} onChange={(e) => setTipoInput(e.target.value as "ganho" | "despesa")}>
           <option value="ganho">Ganhos</option>
           <option value="despesa">Despesas</option>
@@ -73,9 +101,9 @@ function App() {
         <button type= "submit">Adicionar</button>
       </form>
 
-      <ul>
+      <ul className="lista-extrato">
         {extrato.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className={`item-descricao ${item.tipo}`}>
               {item.descricao} - R$ {item.valor} ({item.tipo})
             <button onClick={() => lidarDeletar(item.id)}>Deletar</button>
             </li>

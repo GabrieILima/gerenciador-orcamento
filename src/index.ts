@@ -80,7 +80,7 @@ app.post("/transacoes", async (req, res) => {
     res.status(201).json({mensagem: "Transação adicionada com sucesso!"});
 
 })
-app.delete("/transacao/:id", async (req, res)=> {
+app.delete("/transacoes/:id", async (req, res)=> {
     const idDeletar = Number(req.params.id);
     await deletarTransacao(idDeletar);
     res.json({mensagem: "Transação deletada com sucesso!"})
