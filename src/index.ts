@@ -21,8 +21,9 @@ type Transacao = {
     parcelaAtual?: number;
     totalParcelas?: number;
     statusAtual: "ativo" | "concluido";
+    pago: Boolean;
     data: Date;
-
+    
 
 
 };
@@ -69,6 +70,7 @@ async function processarRecorrencia() {
                 tipo: item.tipo,
                 recorrente: item.recorrente,
                 statusAtual: item.statusAtual,
+                pago: false,
                 data: new Date()
             }
 
@@ -140,6 +142,24 @@ async function iniciarSistema() {
 
 app.get("/transacoes", (req, res) => {
     res.json(extrato);
+})
+
+app.patch("/transacoes/:id", async (req, res) =>{
+    const idTransacao = Number(req.params.id)
+    const newPago = req.body.pago
+
+    const transacaoEncontrada = extrato.find((item) => item.id === idTransacao)
+
+    if(transacaoEncontrada){
+        transacaoEncontrada.pago = newPago;
+
+        await salvarDados()
+
+        res.json({ mensagem: "Status de pagamento atualizado!" });
+    }else{
+        res.status(404).json({ mensagem: "Transação não encontrada" });
+    }
+    
 })
 
 app.post("/transacoes", async (req, res) => {

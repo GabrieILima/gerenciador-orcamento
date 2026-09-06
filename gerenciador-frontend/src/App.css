@@ -183,3 +183,48 @@ body {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+.checkbox-pago{
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ff4d4d;
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  margin-right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.checkbox-pago:hover {
+  border-color: #ff3333;
+  background-color: rgba(255, 77, 77, 0.1);
+}
+
+.checkbox-pago:checked {
+  background-color: #2ec4b6;
+  border-color: #2ec4b6;      
+}
+
+.checkbox-pago:checked::after {
+  content: '✓';
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.texto-transacao {
+  transition: all 0.3s ease;
+}
+
+
+.texto-transacao.paga {
+  color: #777777; 
+  text-decoration: line-through; 
+  opacity: 0.6; 
+}

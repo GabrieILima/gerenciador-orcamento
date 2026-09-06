@@ -1,15 +1,6 @@
 [
   {
-    "id": 1788639799637,
-    "descricao": "Salario",
-    "valor": 1500,
-    "tipo": "ganho",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "data": "2026-09-05T20:23:19.637Z"
-  },
-  {
-    "id": 1788720921420,
+    "id": 1788726567803,
     "descricao": "Curso",
     "valor": 100,
     "tipo": "despesa",
@@ -17,6 +8,17 @@
     "parcelaAtual": 1,
     "totalParcelas": 3,
     "status": "ativo",
-    "data": "2026-09-06T18:55:21.420Z"
+    "pago": false,
+    "data": "2026-09-06T20:29:27.803Z"
+  },
+  {
+    "id": 1788728079295,
+    "descricao": "Salário",
+    "valor": 1500,
+    "tipo": "ganho",
+    "recorrente": "fixa",
+    "status": "ativo",
+    "pago": false,
+    "data": "2026-09-06T20:54:39.295Z"
   }
 ]

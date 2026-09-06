@@ -10,6 +10,7 @@ type Transacao = {
     parcelaAtual?: number;
     totalParcelas?: number;
     status: "ativo" | "concluido";
+    pago: boolean;
     data: Date;
 };
 
@@ -54,6 +55,7 @@ function App() {
       parcelaAtual: recorrenteInput === 'parcelada' ? 1 : undefined,
       totalParcelas: recorrenteInput ==='parcelada' ? totalParcelasInput:undefined,
       status: "ativo",
+      pago: false,
       data: new Date()
     };
 
@@ -136,6 +138,25 @@ function App() {
     }
   }
   
+  async function lidarAlternarPago(idPago: number) {
+    const itemEncontrado = extrato.find((item) =>
+      item.id === idPago)
+
+      if(itemEncontrado){
+        const novoStatusPago = !itemEncontrado.pago
+
+        await fetch (`http://localhost:3000/transacoes/${idPago}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({pago: novoStatusPago})
+    
+      });
+        buscarTransacao();
+      }
+    }
+  
 
 
   return(
@@ -177,11 +198,19 @@ function App() {
         {transacoesExibidas.map((item) => (
             <li key={item.id} className={`item-descricao ${item.tipo}`}>
               <span>
-              {item.descricao} - R$ {item.valor} {}
-              {item.recorrente === "fixa" && <span className="tag-recorrente">(Fixa) </span>}
-              {item.recorrente === "parcelada" && <span className="tag-recorrente">({item.parcelaAtual}/{item.totalParcelas}) </span>}
+              {item.tipo==="despesa"?( <input type="checkbox" checked ={item.pago} onChange={() => lidarAlternarPago(item.id)} className="checkbox-pago"/>):null}
+              <span className={`texto-transacao ${item.pago ? 'paga' : ''}`}>
+                {item.descricao} - R$ {item.valor} {}
+                {item.recorrente === "fixa" && <span className="tag-recorrente">(Fixa) </span>}
+                {item.recorrente === "parcelada" && <span className="tag-recorrente">({item.parcelaAtual}/{item.totalParcelas}) </span>}
               </span>
-            <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
+              </span>
+
+            <div>
+              <button className="botao-editar">Editar</button>
+              <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
+            </div>
+            
 
             </li>
           ))}
