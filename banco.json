@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": 1788639799637,
+    "descricao": "Salario",
+    "valor": 1500,
+    "tipo": "ganho",
+    "recorrente": "fixa",
+    "status": "ativo",
+    "data": "2026-09-05T20:23:19.637Z"
+  },
+  {
+    "id": 1788720921420,
+    "descricao": "Curso",
+    "valor": 100,
+    "tipo": "despesa",
+    "recorrente": "parcelada",
+    "parcelaAtual": 1,
+    "totalParcelas": 3,
+    "status": "ativo",
+    "data": "2026-09-06T18:55:21.420Z"
+  }
+]

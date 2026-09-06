@@ -33,6 +33,11 @@ function App() {
   const [tipoInput, setTipoInput] = useState<"ganho" | "despesa">("ganho")
   const [recorrenteInput, serRecorrenteInput] = useState<"unica" | "fixa" | "parcelada">("unica")
   const [totalParcelasInput, setTotalParcelasInput] = useState<number>(1);
+  const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth())
+
+  
+  
+
 
   let ganhos = 0
   let perdas = 0
@@ -74,7 +79,36 @@ function App() {
     buscarTransacao()
   }
 
-  extrato.forEach((item) =>{
+  let transacoesExibidas: Transacao[] = [];
+
+  extrato.forEach((item) => {
+    const dataItem = new Date(item.data);
+    const parcelaAtual = item.parcelaAtual ?? 0 
+    const totalParcelas = item.totalParcelas ?? 0
+    
+
+    if(dataItem.getMonth() === mesSelecionado){
+      transacoesExibidas.push(item)}
+
+    if(item.status === "ativo" && item.recorrente === "fixa" && dataItem.getMonth() < mesSelecionado){
+        transacoesExibidas.push({...item, data:new Date( new Date().getFullYear(), mesSelecionado, 5)})
+      }
+    if(item.status === "ativo" && item.recorrente === "parcelada"&& dataItem.getMonth() < mesSelecionado){
+
+      const mesesPassados = mesSelecionado - dataItem.getMonth();
+      const parcelaRestante = parcelaAtual + mesesPassados;
+
+      if (parcelaRestante <= totalParcelas){
+        transacoesExibidas.push({...item,parcelaAtual:parcelaRestante,
+           data:new Date( new Date().getFullYear(), mesSelecionado, 5)})
+      }
+
+    }
+
+    
+  })
+
+  transacoesExibidas.forEach((item) =>{
     if (item.tipo === "despesa"){
       perdas = perdas + item.valor
     }else{
@@ -85,7 +119,23 @@ function App() {
   const saldoAtual = ganhos - perdas
 
   
-    
+  const NOMES_MESES =[
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ]
+
+  function voltarMes(){
+    if (mesSelecionado > 0){
+      setMesSelecionado(mesSelecionado-1)
+    }
+  }
+
+  function avancarMes(){
+    if (mesSelecionado < 11){
+      setMesSelecionado(mesSelecionado+1)
+    }
+  }
+  
 
 
   return(
@@ -95,6 +145,11 @@ function App() {
         <h1>Meu Gerenciador Financeiro</h1>
       </div>
       
+      <div className="navegacao-mes">
+        <button onClick={voltarMes} disabled ={mesSelecionado === 0} className="botao-nav">◄ Anterior</button>
+        <span className="mes-atual">{NOMES_MESES[mesSelecionado]} / {new Date().getFullYear()}</span>
+        <button onClick={avancarMes} disabled ={mesSelecionado === 11} className="botao-nav"> Próximo ►</button>
+      </div>
 
       <div className="card-saldo">
         <h2>Saldo atual R${saldoAtual}</h2>
@@ -119,7 +174,7 @@ function App() {
       </form>
 
       <ul className="lista-extrato">
-        {extrato.map((item) => (
+        {transacoesExibidas.map((item) => (
             <li key={item.id} className={`item-descricao ${item.tipo}`}>
               <span>
               {item.descricao} - R$ {item.valor} {}

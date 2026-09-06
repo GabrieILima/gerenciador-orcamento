@@ -146,3 +146,40 @@ body {
   background-color: #ff4d4d;
   color: #ffffff;
 }
+
+.navegacao-mes{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a2a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.mes-atual{
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.botao-nav{
+  background-color: #343434 !important;
+  color: #ffffff;
+  border: 1px solid #4a4a4a;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.botao-nav:hover:not(:disabled){
+  background-color: #00adb5 !important;
+  border-color: #00adb5;
+}
+
+.botao-nav:disabled{
+  opacity: 0.3;
+  cursor: not-allowed;
+}
