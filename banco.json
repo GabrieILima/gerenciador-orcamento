@@ -1,24 +1,24 @@
 [
   {
-    "id": 1788726567803,
-    "descricao": "Curso",
-    "valor": 100,
+    "id": 1788985258858,
+    "descricao": "TV",
+    "valor": 170,
     "tipo": "despesa",
     "recorrente": "parcelada",
     "parcelaAtual": 1,
-    "totalParcelas": 3,
+    "totalParcelas": 12,
     "status": "ativo",
     "pago": false,
-    "data": "2026-09-06T20:29:27.803Z"
+    "data": "2026-09-09T20:20:58.859Z"
   },
   {
-    "id": 1788728079295,
+    "id": 1789429770582,
     "descricao": "Salário",
     "valor": 1500,
     "tipo": "ganho",
     "recorrente": "fixa",
     "status": "ativo",
     "pago": false,
-    "data": "2026-09-06T20:54:39.295Z"
+    "data": "2026-09-14T23:49:30.582Z"
   }
 ]

@@ -42,6 +42,7 @@ function App() {
 
   let ganhos = 0
   let perdas = 0
+  let perdasPagas = 0
 
   async function lidarAdicionar(e: React.FormEvent){
     e.preventDefault();
@@ -113,12 +114,18 @@ function App() {
   transacoesExibidas.forEach((item) =>{
     if (item.tipo === "despesa"){
       perdas = perdas + item.valor
+
+      if(item.pago === true){
+        perdasPagas = perdasPagas + item.valor
+      }
     }else{
       ganhos = ganhos + item.valor
     }
   })
 
   const saldoAtual = ganhos - perdas
+  const saldoReal = ganhos - perdasPagas
+  
 
   
   const NOMES_MESES =[
@@ -172,9 +179,14 @@ function App() {
         <button onClick={avancarMes} disabled ={mesSelecionado === 11} className="botao-nav"> Próximo ►</button>
       </div>
 
-      <div className="card-saldo">
-        <h2>Saldo atual R${saldoAtual}</h2>
-      </div>
+      <div className="painel-saldos">
+        <div className="card-saldo">
+          <h2>Saldo Real (Hoje): <span className="valor">R$ {saldoReal}</span></h2>
+        </div>
+        <div className="card-saldo previsto">
+          <h2>Saldo Previsto (Fim do Mês): <span className="valor">R$ {saldoAtual}</span></h2>
+        </div>
+        </div>
       
 
       <form onSubmit={lidarAdicionar} className="formulario-financas">

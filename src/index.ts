@@ -147,6 +147,7 @@ app.get("/transacoes", (req, res) => {
 app.patch("/transacoes/:id", async (req, res) =>{
     const idTransacao = Number(req.params.id)
     const newPago = req.body.pago
+      
 
     const transacaoEncontrada = extrato.find((item) => item.id === idTransacao)
 
