@@ -34,7 +34,8 @@ function App() {
   const [tipoInput, setTipoInput] = useState<"ganho" | "despesa">("ganho")
   const [recorrenteInput, serRecorrenteInput] = useState<"unica" | "fixa" | "parcelada">("unica")
   const [totalParcelasInput, setTotalParcelasInput] = useState<number>(1);
-  const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth())
+  const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth());
+  const [idSendoEditado, setIdSendoEditado] = useState<number | null> (null);
 
   
   
@@ -47,32 +48,64 @@ function App() {
   async function lidarAdicionar(e: React.FormEvent){
     e.preventDefault();
 
-    const novaTransacao: Transacao ={
-      id: Date.now(),
-      descricao: descricaoInput,
-      valor: valorInput,
-      tipo: tipoInput,
-      recorrente: recorrenteInput,
-      parcelaAtual: recorrenteInput === 'parcelada' ? 1 : undefined,
-      totalParcelas: recorrenteInput ==='parcelada' ? totalParcelasInput:undefined,
-      status: "ativo",
-      pago: false,
-      data: new Date()
-    };
+     if (idSendoEditado === null) {
+      const novaTransacao: Transacao = {
+        id: Date.now(),
+        descricao: descricaoInput,
+        valor: valorInput,
+        tipo: tipoInput,
+        recorrente: recorrenteInput,
+        parcelaAtual: recorrenteInput === 'parcelada' ? 1 : undefined,
+        totalParcelas: recorrenteInput === 'parcelada' ? totalParcelasInput : undefined,
+        status: "ativo",
+        pago: false,
+        data: new Date()
+      };
 
-    await fetch("http://localhost:3000/transacoes", {
-      method: "POST",
-      headers:{
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(novaTransacao)
-    })
+      await fetch("http://localhost:3000/transacoes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novaTransacao)
+      });
+
+    } else {
+
+      const itemOriginal = extrato.find(item => item.id === idSendoEditado);
+      const mesOriginal = itemOriginal ? new Date(itemOriginal.data).getMonth() : mesSelecionado;
+
+      const projecaoFuturo = mesOriginal < mesSelecionado;
+
+
+      const transacaoEditada: Transacao = {
+        id: projecaoFuturo ? Date.now() : idSendoEditado,
+        descricao: descricaoInput,
+        valor: valorInput,
+        tipo: tipoInput,
+        recorrente: recorrenteInput,
+        parcelaAtual: recorrenteInput === 'parcelada' ? 1 : undefined,
+        totalParcelas: recorrenteInput === 'parcelada' ? totalParcelasInput : undefined,
+        status: "ativo",
+        pago: false, 
+        data: new Date(new Date().getFullYear(), mesSelecionado, 5)
+      };
+
+      const metodoRede = projecaoFuturo ? "POST" : "PUT";
+      const urlRede = projecaoFuturo ? "http://localhost:3000/transacoes" : `http://localhost:3000/transacoes/${idSendoEditado}`;
+
+      
+      await fetch(urlRede, {
+        method: metodoRede,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(transacaoEditada)
+      });
+
+      setIdSendoEditado(null);
+    }
 
     buscarTransacao();
-
     setDescricaoInput("");
     setValorInput(0);
-  };
+  }
 
   async function lidarDeletar(idDeletar: number){
     await fetch (`http://localhost:3000/transacoes/${idDeletar}`, {
@@ -93,17 +126,35 @@ function App() {
     if(dataItem.getMonth() === mesSelecionado){
       transacoesExibidas.push(item)}
 
-    if(item.status === "ativo" && item.recorrente === "fixa" && dataItem.getMonth() < mesSelecionado){
-        transacoesExibidas.push({...item, data:new Date( new Date().getFullYear(), mesSelecionado, 5)})
+    if (item.status === "ativo" && dataItem.getMonth() < mesSelecionado) {
+      
+      const existeRealNoMes = extrato.some((t) => {
+      const dataT = new Date(t.data);
+        return t.descricao === item.descricao && (dataT.getMonth() === mesSelecionado || dataT.getMonth() > dataItem.getMonth());
+      });
+
+      if (existeRealNoMes) {
+        return;
       }
-    if(item.status === "ativo" && item.recorrente === "parcelada"&& dataItem.getMonth() < mesSelecionado){
 
-      const mesesPassados = mesSelecionado - dataItem.getMonth();
-      const parcelaRestante = parcelaAtual + mesesPassados;
+      if (item.recorrente === "fixa") {
+        transacoesExibidas.push({
+          ...item, 
+          data: new Date(new Date().getFullYear(), mesSelecionado, 5)
+        });
+      }
 
-      if (parcelaRestante <= totalParcelas){
-        transacoesExibidas.push({...item,parcelaAtual:parcelaRestante,
-           data:new Date( new Date().getFullYear(), mesSelecionado, 5)})
+      if (item.recorrente === "parcelada") {
+        const mesesPassados = mesSelecionado - dataItem.getMonth();
+        const parcelaRestante = parcelaAtual + mesesPassados;
+
+        if (parcelaRestante <= totalParcelas) {
+          transacoesExibidas.push({
+            ...item,
+            parcelaAtual: parcelaRestante,
+            data: new Date(new Date().getFullYear(), mesSelecionado, 5)
+          });
+        }
       }
 
     }
@@ -163,6 +214,18 @@ function App() {
         buscarTransacao();
       }
     }
+
+    function prepararEdicao(item: Transacao) {
+      setDescricaoInput(item.descricao);
+      setValorInput(item.valor);
+      setTipoInput(item.tipo);
+      serRecorrenteInput(item.recorrente)
+
+      if (item.recorrente === "parcelada" && item.totalParcelas){
+        setTotalParcelasInput(item.totalParcelas)
+      }
+      setIdSendoEditado(item.id)
+    }
   
 
 
@@ -170,7 +233,7 @@ function App() {
     <div className="container-app">
 
       <div className="card-titulo">
-        <h1>Meu Gerenciador Financeiro</h1>
+        <h1>Bolsa de Rúpias</h1>
       </div>
       
       <div className="navegacao-mes">
@@ -203,7 +266,7 @@ function App() {
         </select>
         {recorrenteInput === "parcelada" && (
           <input type="number" placeholder="Qtd Parcelas" value={totalParcelasInput} onChange={(e) => setTotalParcelasInput(Number(e.target.value))}/>)}
-        <button type= "submit">Adicionar</button>
+        <button type= "submit">{idSendoEditado !== null ? "Salvar Alterações" : "Adicionar"}</button>
       </form>
 
       <ul className="lista-extrato">
@@ -219,7 +282,7 @@ function App() {
               </span>
 
             <div>
-              <button className="botao-editar">Editar</button>
+              <button className="botao-editar" onClick={() => prepararEdicao(item)}>Editar</button>
               <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
             </div>
             

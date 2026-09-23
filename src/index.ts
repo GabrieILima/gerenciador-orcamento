@@ -187,3 +187,25 @@ app.listen(PORTA, async () => {
     iniciarSistema();
 });
 
+app.put("/transacoes/:id", async (req,res) =>{
+
+    const idTransacao = Number(req.params.id);
+    const transacaoAtualizada = req.body;
+
+    const indexAntigo = extrato.findIndex((item) => item.id === idTransacao);
+
+    if (indexAntigo !== -1) {
+        
+        extrato[indexAntigo] = transacaoAtualizada;
+
+        await salvarDados();
+
+        res.json({ mensagem: "Transação atualizada com sucesso!" });
+    } else {
+        res.status(404).json({ mensagem: "Transação não encontrada." });
+    }
+
+}
+
+)
+
