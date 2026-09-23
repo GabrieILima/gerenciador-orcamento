@@ -50,5 +50,17 @@
     "status": "ativo",
     "pago": false,
     "data": "2026-11-05T03:00:00.000Z"
+  },
+  {
+    "id": 1790126917347,
+    "descricao": "Seguro",
+    "valor": 1500,
+    "tipo": "ganho",
+    "recorrente": "parcelada",
+    "parcelaAtual": 1,
+    "totalParcelas": 2,
+    "status": "ativo",
+    "pago": false,
+    "data": "2026-09-23T01:28:37.347Z"
   }
 ]
