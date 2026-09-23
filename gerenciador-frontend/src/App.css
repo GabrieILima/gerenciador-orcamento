@@ -247,3 +247,81 @@ body {
   text-decoration: line-through; 
   opacity: 0.6; 
 }
+
+.barra-filtros {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.botao-filtro {
+  background-color: #2a2a2a !important;
+  color: #a0a0a0;
+  border: 1px solid #3a3a3a;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.botao-filtro:hover {
+  background-color: #333333 !important;
+  color: #ffffff;
+}
+
+.botao-filtro.ativo {
+  background-color: #00adb5 !important;
+  border-color: #00adb5;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 173, 181, 0.2);
+}
+
+
+.tag-categoria {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 10px;
+  text-transform: uppercase;
+}
+
+
+.tag-categoria.alimentacao {
+  background-color: rgba(255, 159, 67, 0.2);
+  color: #ff9f43; 
+}
+
+.tag-categoria.moradia {
+  background-color: rgba(94, 92, 230, 0.2);
+  color: #5e5ce6; 
+}
+
+.tag-categoria.serviços {
+  background-color: rgba(0, 173, 181, 0.2);
+  color: #00adb5; 
+}
+
+.tag-categoria.educação {
+  background-color: rgba(108, 117, 125, 0.2);
+  color: #adb5bd; 
+}
+
+.tag-categoria.lazer {
+  background-color: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b; 
+}
+
+.tag-categoria.rendimento {
+  background-color: rgba(46, 196, 182, 0.2);
+  color: #2ec4b6; 
+}
+
+.tag-categoria.compras {
+  background-color: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}

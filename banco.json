@@ -1,37 +1,5 @@
 [
   {
-    "id": 1789429770582,
-    "descricao": "Salário",
-    "valor": 1500,
-    "tipo": "ganho",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "pago": false,
-    "data": "2026-09-14T23:49:30.582Z"
-  },
-  {
-    "id": 1789474839284,
-    "descricao": "TV",
-    "valor": 170,
-    "tipo": "despesa",
-    "recorrente": "parcelada",
-    "parcelaAtual": 1,
-    "totalParcelas": 12,
-    "status": "ativo",
-    "pago": false,
-    "data": "2026-09-15T12:20:39.284Z"
-  },
-  {
-    "id": 1790124517428,
-    "descricao": "Luz",
-    "valor": 190,
-    "tipo": "despesa",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "pago": false,
-    "data": "2026-09-23T00:48:37.428Z"
-  },
-  {
     "id": 1790124525524,
     "descricao": "Luz",
     "valor": 242,
@@ -52,15 +20,25 @@
     "data": "2026-11-05T03:00:00.000Z"
   },
   {
-    "id": 1790126917347,
-    "descricao": "Seguro",
+    "id": 1790206935304,
+    "descricao": "Salário",
     "valor": 1500,
     "tipo": "ganho",
-    "recorrente": "parcelada",
-    "parcelaAtual": 1,
-    "totalParcelas": 2,
+    "recorrente": "fixa",
     "status": "ativo",
     "pago": false,
-    "data": "2026-09-23T01:28:37.347Z"
+    "categoria": "Rendimento",
+    "data": "2026-09-23T23:42:15.304Z"
+  },
+  {
+    "id": 1790207004063,
+    "descricao": "Luz",
+    "valor": 190,
+    "tipo": "despesa",
+    "recorrente": "unica",
+    "status": "ativo",
+    "pago": false,
+    "categoria": "Serviços",
+    "data": "2026-09-23T23:43:24.063Z"
   }
 ]

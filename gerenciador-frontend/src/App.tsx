@@ -11,6 +11,7 @@ type Transacao = {
   totalParcelas?: number;
   status: "ativo" | "concluido";
   pago: boolean;
+  categoria: "Alimentação" | "Compras" | "Educação" | "Lazer" | "Moradia" | "Rendimento" | "Serviços"
   data: Date;
 };
 
@@ -26,9 +27,11 @@ function App() {
   const [tipoInput, setTipoInput] = useState<"ganho" | "despesa">("ganho");
   const [recorrenteInput, serRecorrenteInput] = useState<"unica" | "fixa" | "parcelada">("unica");
   const [totalParcelasInput, setTotalParcelasInput] = useState<number>(1);
+  const [categoriaInput, setCategoriaInput] = useState<"Moradia" | "Serviços" | "Educação" |"Alimentação"|"Lazer" | "Rendimento" | "Compras">("Serviços")
   const [idSendoEditado, setIdSendoEditado] = useState<number | null>(null);
 
   const [deslocamento, setDeslocamento] = useState<number>(0);
+  const [filtroRapido, setFiltroRapido] = useState<"todos" |"ganho"|"despesa">("todos");
 
   const dataAlvo = new Date(new Date().getFullYear(), new Date().getMonth() + deslocamento, 1);
   const mesSelecionado = dataAlvo.getMonth();
@@ -58,6 +61,7 @@ function App() {
         totalParcelas: recorrenteInput === 'parcelada' ? totalParcelasInput : undefined,
         status: "ativo",
         pago: false,
+        categoria: categoriaInput,
         data: new Date()
       };
 
@@ -84,6 +88,7 @@ function App() {
         totalParcelas: recorrenteInput === 'parcelada' ? totalParcelasInput : undefined,
         status: "ativo",
         pago: false, 
+        categoria: categoriaInput,
         data: new Date(anoSelecionado, mesSelecionado, 5)
       };
 
@@ -131,6 +136,8 @@ function App() {
     setValorInput(item.valor);
     setTipoInput(item.tipo);
     serRecorrenteInput(item.recorrente);
+
+    setCategoriaInput(item.categoria as any);
 
     if (item.recorrente === "parcelada" && item.totalParcelas) {
       setTotalParcelasInput(item.totalParcelas);
@@ -201,7 +208,13 @@ function App() {
   let perdas = 0;
   let perdasPagas = 0;
 
-  transacoesExibidas.forEach((item) => {
+  const transacoesFiltradas = transacoesExibidas.filter((item) =>{
+    if(filtroRapido === "todos") return true;
+
+    return item.tipo === filtroRapido;
+  })
+
+  transacoesFiltradas.forEach((item) => {
     if (item.tipo === "despesa") {
       perdas = perdas + item.valor;
       if (item.pago === true) {
@@ -212,6 +225,8 @@ function App() {
     }
   });
 
+  
+
   const saldoAtual = ganhos - perdas;
   const saldoReal = ganhos - perdasPagas;
 
@@ -219,6 +234,27 @@ function App() {
     <div className="container-app">
       <div className="card-titulo">
         <h1>Bolsa de Rúpias</h1>
+      </div>
+
+      <div className="barra-filtros">
+        <button 
+          onClick={() => setFiltroRapido("todos")} 
+          className={`botao-filtro ${filtroRapido === "todos" ? "ativo" : ""}`}
+        >
+          Ver Tudo
+        </button>
+        <button 
+          onClick={() => setFiltroRapido("ganho")} 
+          className={`botao-filtro ${filtroRapido === "ganho" ? "ativo" : ""}`}
+        >
+          Apenas Ganhos
+        </button>
+        <button 
+          onClick={() => setFiltroRapido("despesa")} 
+          className={`botao-filtro ${filtroRapido === "despesa" ? "ativo" : ""}`}
+        >
+          Apenas Despesas
+        </button>
       </div>
       
       <div className="navegacao-mes">
@@ -244,6 +280,20 @@ function App() {
           <option value="ganho">Ganhos</option>
           <option value="despesa">Despesas</option>
         </select>
+
+        <select
+          name = "categoria"
+          id = "categoriaTransacao"
+          value = {categoriaInput}
+          onChange={(e) => setCategoriaInput(e.target.value as any)}>
+            <option value="Moradia">Moradia</option>
+            <option value="Serviços">Serviços</option>
+            <option value="Educação">Educação</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Rendimento">Rendimento</option>
+            <option value="Compras">Compras</option>
+          </select>
         
         <select name="recorrente" id="recorrenteInput" value={recorrenteInput} onChange={(e) => serRecorrenteInput(e.target.value as "unica" | "fixa" | "parcelada")}>
           <option value="unica">Única</option>
@@ -259,23 +309,26 @@ function App() {
       </form>
 
       <ul className="lista-extrato">
-        {transacoesExibidas.map((item) => (
-          <li key={item.id} className={`item-descricao ${item.tipo}`}>
-            <span>
-              {item.tipo === "despesa" && (
-                <input type="checkbox" checked={item.pago} onChange={() => lidarAlternarPago(item.id)} className="checkbox-pago"/>
-              )}
-              <span className={`texto-transacao ${item.pago ? 'paga' : ''}`}>
-                {item.descricao} - R$ {item.valor}
-              </span>
-              {item.recorrente === "fixa" && <span className="tag-recorrente"> (Fixa)</span>}
-              {item.recorrente === "parcelada" && (
-                <span className="tag-recorrente">
-                  {item.tipo === "ganho" ? ` (Mês ${item.parcelaAtual}/${item.totalParcelas})` : ` (${item.parcelaAtual}/${item.totalParcelas})`}
-                </span>
-              )}
+        {transacoesFiltradas.map((item) => (
+        <li key={item.id} className={`item-descricao ${item.tipo}`}>
+          <span>
+            {item.tipo === "despesa" && (
+              <input type="checkbox" checked={item.pago} onChange={() => lidarAlternarPago(item.id)} className="checkbox-pago"/>
+            )}
+            <span className={`texto-transacao ${item.pago ? 'paga' : ''}`}>
+              {item.descricao} - R$ {item.valor}
             </span>
-            <div>
+            <span className={`tag-categoria ${item.categoria.toLowerCase()}`}>
+              {item.categoria}
+            </span>
+            {item.recorrente === "fixa" && <span className="tag-recorrente"> (Fixa)</span>}
+            {item.recorrente === "parcelada" && (
+              <span className="tag-recorrente">
+                {item.tipo === "ganho" ? ` (Mês ${item.parcelaAtual}/${item.totalParcelas})` : ` (${item.parcelaAtual}/${item.totalParcelas})`}
+              </span>
+            )}
+          </span>
+          <div>
               <button onClick={() => prepararEdicao(item)} className="botao-editar">Editar</button>
               <button onClick={() => lidarDeletar(item.id)} className="botao-deletar">Deletar</button>
             </div>

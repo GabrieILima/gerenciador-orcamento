@@ -22,6 +22,7 @@ type Transacao = {
     totalParcelas?: number;
     statusAtual: "ativo" | "concluido";
     pago: Boolean;
+    categoria: "Alimentação" | "Compras" | "Educação" | "Lazer" | "Moradia" | "Rendimento" | "Serviços"
     data: Date;
     
 
@@ -71,6 +72,7 @@ async function processarRecorrencia() {
                 recorrente: item.recorrente,
                 statusAtual: item.statusAtual,
                 pago: false,
+                categoria: item.categoria,
                 data: new Date()
             }
 
