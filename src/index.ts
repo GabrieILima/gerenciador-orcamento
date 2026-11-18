@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors"
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import * as fs from "fs/promises";
 import { it } from "node:test";
@@ -11,9 +13,17 @@ app.use(cors());
 app.use(express.json());
 
 
+type Usuario = {
+    id: string;
+    email: string;
+    senhaCriptografada: string;
+}
+
+
 
 type Transacao = {
     id: number;
+    usuarioId: string;
     descricao: string;
     valor: number;
     tipo: "ganho" | "despesa";
@@ -32,15 +42,24 @@ type Transacao = {
 
 const CAMINHO_ARQUIVO = "./banco.json";
 let extrato: Transacao[] = [];
+let usuarios: Usuario[] = [];
 
 function adicionarTransacao(novaTransacao: Transacao) {
     extrato.push(novaTransacao);
 }
 
 async function carregarDados(){
+
+    try{
     let dadosTexto = await fs.readFile(CAMINHO_ARQUIVO, "utf-8");
-    extrato = JSON.parse(dadosTexto)
+    const banco = JSON.parse(dadosTexto);
+    extrato = banco.transacoes || [];
+    usuarios =  banco.usuarios || [];
     console.log("Dados Carregados com sucesso")
+    } catch(erro){
+        extrato = [];
+        usuarios = [];
+    }
 }
 
 async function processarRecorrencia() {
@@ -66,6 +85,7 @@ async function processarRecorrencia() {
                 
             const copiaTransacao: Transacao = {
                 id: Date.now() + Math.random(),
+                usuarioId: item.usuarioId,
                 descricao: item.descricao,
                 valor: item.valor,
                 tipo: item.tipo,
@@ -129,12 +149,18 @@ async function deletarTransacao(idDeletar: number) {
 
 async function salvarDados() {
 
-    let texto = JSON.stringify(extrato, null,2)
+    let estruturaBanco ={
+        transacoes: extrato,
+        usuarios: usuarios
+    }
+
+    let texto = JSON.stringify(estruturaBanco, null, 2); 
     await fs.writeFile(CAMINHO_ARQUIVO,texto)
-    console.log("Salvo com sucesso")
+    console.log("Banco de dados salvo com sucesso!")
     
 
 }
+
 
 
 
@@ -211,3 +237,66 @@ app.put("/transacoes/:id", async (req,res) =>{
 
 )
 
+app.post("/auth/cadastro", async(req, res) =>{
+    const email = req.body.email
+    const senhaLimpa = req.body.senha
+
+    if(!email || !senhaLimpa){
+        res.status(400).json({ mensagem: "Email e senha são obrigados"});
+    }
+
+    const usuarioExiste = usuarios.some((u) => u.email === email);
+    if (usuarioExiste) {
+        res.status(400).json({ mensagem: "Este e-mail já está cadastrado." });
+        return;
+    }
+
+    const custoCripto = 10;
+    const hashGerado = await bcrypt.hash(senhaLimpa, custoCripto);
+
+    const novoUsuario: Usuario ={
+        id: String(Date.now()+Math.random()),
+        email: email,
+        senhaCriptografada: hashGerado
+    };
+
+    usuarios.push(novoUsuario);
+
+    await salvarDados();
+
+    res.status(201).json({
+        mensagem: "Usuário registrado com sucesso!",
+        usuarioId: novoUsuario.id
+    })
+})
+
+app.post("/auth/login", async(req, res) =>{
+    const email = req.body.email;
+    const senhaLimpa = req.body.senha;
+
+    const usuarioEncontrado = usuarios.find((u) => u.email === email);
+
+    if(!usuarioEncontrado){
+        res.status(401).json({mensagem: "Email ou senha incorretos"});
+        return;
+    }
+
+
+    const senhaValida = await bcrypt.compare(senhaLimpa, usuarioEncontrado.senhaCriptografada);
+
+    if(!senhaValida){
+        res.status(401).json({mensagem: "E-mail ou senha incorretos."});
+        return;
+    }
+
+    const token = jwt.sign(
+        {id: usuarioEncontrado.id},
+        "chave_secreta_temporaria_bolsa_rupias",
+        {expiresIn: "1d"}
+    );
+
+    res.json({
+        mensagem:"Login realizado com sucesso!",
+        token: token
+    })
+})

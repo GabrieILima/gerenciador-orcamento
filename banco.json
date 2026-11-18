@@ -1,44 +1,10 @@
-[
-  {
-    "id": 1790124525524,
-    "descricao": "Luz",
-    "valor": 242,
-    "tipo": "despesa",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "pago": false,
-    "data": "2026-10-05T03:00:00.000Z"
-  },
-  {
-    "id": 1790124542339,
-    "descricao": "Luz",
-    "valor": 145,
-    "tipo": "despesa",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "pago": false,
-    "data": "2026-11-05T03:00:00.000Z"
-  },
-  {
-    "id": 1790206935304,
-    "descricao": "Salário",
-    "valor": 1500,
-    "tipo": "ganho",
-    "recorrente": "fixa",
-    "status": "ativo",
-    "pago": false,
-    "categoria": "Rendimento",
-    "data": "2026-09-23T23:42:15.304Z"
-  },
-  {
-    "id": 1790207004063,
-    "descricao": "Luz",
-    "valor": 190,
-    "tipo": "despesa",
-    "recorrente": "unica",
-    "status": "ativo",
-    "pago": false,
-    "categoria": "Serviços",
-    "data": "2026-09-23T23:43:24.063Z"
-  }
-]
+{
+  "transacoes": [],
+  "usuarios": [
+    {
+      "id": "1790295950928.904",
+      "email": "teste2@email.com",
+      "senhaCriptografada": "$2b$10$hyHFnWVfzDaP1act/8IYVuMNmTjoaUJ5gDKvMccjsK9MqDymQZOMq"
+    }
+  ]
+}
